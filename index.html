@@ -1,85 +1,47 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Câmera com Moldura</title>
+  <meta charset="UTF-8">
+  <title>mold</title>
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: black;
+    body {
+      background-color: #111;
+      color: #fff;
+      text-align: center;
+      font-family: sans-serif;
     }
 
-    #container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
+    h1 {
+      color: #00f;
+      margin-top: 20px;
     }
 
-    video, canvas, img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
+    .moldura {
+      width: 300px;
+      height: 300px;
+      margin: 30px auto;
+      background: url('moldura.png') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    #captureButton {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 24px;
+    button {
+      padding: 10px 20px;
       font-size: 16px;
-      background: white;
-      border: none;
-      border-radius: 8px;
+      margin-top: 20px;
       cursor: pointer;
-      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <div id="container">
-    <video id="video" autoplay playsinline></video>
-    <img src="moldura.png" id="moldura" alt="Moldura" />
-    <canvas id="canvas" style="display: none;"></canvas>
-    <button id="captureButton">📸 Tirar Foto</button>
+  <h1>mold</h1>
+
+  <div class="moldura">
+    <p>Moldura</p>
   </div>
 
-  <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const captureButton = document.getElementById('captureButton');
-
-    // Acessar a câmera
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
-      })
-      .catch(err => {
-        alert('Erro ao acessar a câmera: ' + err);
-      });
-
-    // Tirar foto com a moldura
-    captureButton.addEventListener('click', () => {
-      const ctx = canvas.getContext('2d');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const moldura = document.getElementById('moldura');
-      ctx.drawImage(moldura, 0, 0, canvas.width, canvas.height);
-
-      const link = document.createElement('a');
-      link.download = 'foto-com-moldura.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
-  </script>
+  <button>Tirar Foto</button>
 </body>
 </html>
