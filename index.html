@@ -1,43 +1,44 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Câmera com Moldura</title>
   <style>
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
       overflow: hidden;
-      background: black;
+      text-align: center;
+      background-color: #000;
     }
 
     #container {
       position: relative;
-      width: 100vw;
-      height: 100vh;
+      display: inline-block;
     }
 
-    video, canvas, img {
-      position: absolute;
-      top: 0;
-      left: 0;
+    video, canvas {
       width: 100vw;
       height: 100vh;
       object-fit: cover;
     }
 
-    #captureButton {
+    #moldura {
       position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+    }
+
+    #botao {
+      position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 12px 24px;
-      font-size: 16px;
-      background: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      padding: 10px 20px;
+      font-size: 18px;
       z-index: 10;
     }
   </style>
@@ -45,40 +46,40 @@
 <body>
   <div id="container">
     <video id="video" autoplay playsinline></video>
-    <img src="moldura.png" id="moldura" alt="Moldura" />
-    <canvas id="canvas" style="display: none;"></canvas>
-    <button id="captureButton">📸 Tirar Foto</button>
+    <img id="moldura" src="moldura.png" alt="Moldura" />
   </div>
+  <button id="botao">Tirar Foto</button>
+  <canvas id="canvas" style="display: none;"></canvas>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    const captureButton = document.getElementById('captureButton');
+    const botao = document.getElementById('botao');
+    const moldura = document.getElementById('moldura');
 
-    // Acessar a câmera
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
-      })
-      .catch(err => {
-        alert('Erro ao acessar a câmera: ' + err);
-      });
+    // Ativar câmera
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+    });
 
-    // Tirar foto com a moldura
-    captureButton.addEventListener('click', () => {
-      const ctx = canvas.getContext('2d');
+    botao.addEventListener('click', () => {
+      const context = canvas.getContext('2d');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Desenha a câmera
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      const moldura = document.getElementById('moldura');
-      ctx.drawImage(moldura, 0, 0, canvas.width, canvas.height);
-
-      const link = document.createElement('a');
-      link.download = 'foto-com-moldura.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      // Desenha a moldura por cima
+      const img = new Image();
+      img.src = moldura.src;
+      img.onload = () => {
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const link = document.createElement('a');
+        link.download = 'foto-com-moldura.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      };
     });
   </script>
 </body>
