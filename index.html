@@ -3,38 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Filtro Maria Vitória - 1 aninho</title>
+  <title>Câmera com Moldura</title>
   <style>
-    * {
+    body, html {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-    }
-    body, html {
-      height: 100%;
-      width: 100%;
       overflow: hidden;
-      background-color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: black;
     }
-    .filtro-container {
+
+    #container {
       position: relative;
-      width: 100%;
-      max-width: 600px;
-      height: auto;
+      width: 100vw;
+      height: 100vh;
     }
-    .filtro-container img {
-      width: 100%;
-      height: auto;
-      display: block;
+
+    video, canvas, img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
+
+    #captureButton {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      font-size: 16px;
+      background: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <div class="filtro-container">
-    <img src="moldura.png" alt="Filtro Maria Vitória 1 aninho">
+  <div id="container">
+    <video id="video" autoplay playsinline></video>
+    <img src="moldura.png" id="moldura" alt="Moldura" />
+    <canvas id="canvas" style="display: none;"></canvas>
+    <button id="captureButton">📸 Tirar Foto</button>
   </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureButton = document.getElementById('captureButton');
+
+    // Acessar a câmera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert('Erro ao acessar a câmera: ' + err);
+      });
+
+    // Tirar foto com a moldura
+    captureButton.addEventListener('click', () => {
+      const ctx = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const moldura = document.getElementById('moldura');
+      ctx.drawImage(moldura, 0, 0, canvas.width, canvas.height);
+
+      const link = document.createElement('a');
+      link.download = 'foto-com-moldura.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
 </body>
 </html>
